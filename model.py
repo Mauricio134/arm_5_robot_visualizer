@@ -52,7 +52,7 @@ fin_theta_total = fin_theta_2 + fin_theta_3
 
 # Angles in motor 2
 fin_beta_2 = func.findAngSide(size_a, fin_face_2, size_b)
-fin_beta_3 = func.findAngSide(fin_beta_2, size_between_motors, fin_face_1)
+fin_beta_3 = func.findAngSide(fin_face_2, size_between_motors, fin_face_1)
 fin_beta_1 = 180.0 - (fin_beta_3 + fin_beta_2)
 
 
@@ -61,7 +61,7 @@ print("Before Init Angle in Motor 2:", init_beta_1)
 print()
 
 # Movement
-if(init_target_x != fin_target_x and init_target_y != fin_target_y):
+if(init_target_x != fin_target_x or init_target_y != fin_target_y):
     delta_angle_1, delta_angle_2 = fin_theta_total - init_theta_total, fin_beta_1 - init_beta_1
 
     direction_angle_1 = (delta_angle_1 > 0)
