@@ -7,9 +7,6 @@ import math
 rpm = 5
 angles_per_second = rpm * 6
 
-angles_per_second_pos = angles_per_second
-angles_per_second_neg = -angles_per_second
-
 angles_per_step = 1.8
 
 duration = 6000
@@ -22,8 +19,8 @@ base_arm_2_x, base_arm_2_y = 20.5, -30.0
 size_between_motors = func.findD(base_arm_2_x, base_arm_2_y, base_arm_1_x, base_arm_1_y)
 
 # Features of target
-init_target_x, init_target_y = 0, 0
-fin_target_x, fin_target_y = 0, 0
+init_target_x, init_target_y = 10, 0
+fin_target_x, fin_target_y = 10, 10
 
 # Init Angles
 # Faces
@@ -55,6 +52,8 @@ fin_beta_2 = func.findAngSide(size_a, fin_face_2, size_b)
 fin_beta_3 = func.findAngSide(fin_face_2, size_between_motors, fin_face_1)
 fin_beta_1 = 180.0 - (fin_beta_3 + fin_beta_2)
 
+
+#func.create_window([init_target_x, init_target_y], angles_per_step, duration, [size_a, size_b], [base_arm_1_x, base_arm_1_y], [base_arm_2_x, base_arm_2_y], size_between_motors)
 
 print("Before Init Angle in Motor 1:", init_theta_total)
 print("Before Init Angle in Motor 2:", init_beta_1)
@@ -95,7 +94,6 @@ if(init_target_x != fin_target_x or init_target_y != fin_target_y):
             init_beta_1 += angles_per_step_2
             angle_change_2 -= 1
     
-
 print("After Init Angle in Motor 1:", init_theta_total)
 print("After Init Angle in Motor 2:", init_beta_1)
 print()
