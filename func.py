@@ -99,7 +99,7 @@ def create_down_arm(canvas, arm, size, angle, tag):
     extremo_canvas = convert_to_canvas(extremo_x, extremo_y, canvas)
 
     canvas.create_line(base_canvas[0], base_canvas[1], extremo_canvas[0], extremo_canvas[1], fill="red", width=3, tags=tag)
-
+    canvas.update()
     return canvas
 
 def create_entry(root):
@@ -157,7 +157,11 @@ def create_change_position(canva, arms, sizes, target, entries, angles_init, siz
         print(abs(delta_angle_1 / angles_per_step))
         print(abs(delta_angle_2 / angles_per_step))
 
-        delta_duration_1, delta_duration_2 = duration / angle_change_1, duration / angle_change_2
+        if(angle_change_1 > 0):
+            delta_duration_1 = duration / angle_change_1
+            
+        if(angle_change_2 > 0):
+            delta_duration_2 =duration / angle_change_2
 
         last_time = time.time() * 1000.0
 
@@ -178,7 +182,10 @@ def create_change_position(canva, arms, sizes, target, entries, angles_init, siz
                 angles_init[1] += angles_per_step_2
                 angle_change_2 -= 1
                 canva = create_down_arm(canva, arms[1], sizes[0], angles_init[1], "right_down_arm")
-        
+    
+    target[0] = new_entry_x
+    target[1] = new_entry_y
+
     print("After Init Angle in Motor 1:", angles_init[0])
     print("After Init Angle in Motor 2:", angles_init[1])
     print()
