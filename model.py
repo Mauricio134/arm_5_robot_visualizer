@@ -22,8 +22,8 @@ base_arm_2_x, base_arm_2_y = 20.5, -30.0
 size_between_motors = func.findD(base_arm_2_x, base_arm_2_y, base_arm_1_x, base_arm_1_y)
 
 # Features of target
-init_target_x, init_target_y = 0, 0
-fin_target_x, fin_target_y = 0, 0
+init_target_x, init_target_y = 10, 0
+fin_target_x, fin_target_y = 10, 10
 
 # Init Angles
 # Faces
@@ -75,7 +75,13 @@ if(init_target_x != fin_target_x or init_target_y != fin_target_y):
 
     angle_change_1, angle_change_2 = math.floor(abs(delta_angle_1 / angles_per_step)), math.floor(abs(delta_angle_2 / angles_per_step))
 
-    delta_duration_1, delta_duration_2 = duration / angle_change_1, duration / angle_change_2
+    delta_duration_1, delta_duration_2 = 0, 0
+
+    if(angle_change_1 > 0):
+        delta_duration_1 = duration / angle_change_1
+        
+    if(angle_change_2 > 0):
+        delta_duration_2 =duration / angle_change_2
 
     last_time = time.time() * 1000.0
 
