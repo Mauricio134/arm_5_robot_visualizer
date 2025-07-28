@@ -193,11 +193,6 @@ def create_change_position(canva, arms, sizes, target, entries, angles_init, siz
     print("Fin Angle in Motor 2:", angles_end[1])
     print()
 
-
-def jaja(colado):
-    colado[0] += 1
-    print(colado[0])
-
 def create_window(target, angles_per_step, duration, arms_size, arm_left, arm_right, size_between_motors):
     root = Tk()
     root.title("Five Arm Parallel Robot")
