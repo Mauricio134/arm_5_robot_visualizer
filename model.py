@@ -87,6 +87,7 @@ if(init_target_x != fin_target_x or init_target_y != fin_target_y):
         if(angle_change_1 > 0 and elapsed_time >= delta_duration_1):
             init_theta_total += angles_per_step_1
             angle_change_1 -= 1
+            last_time = time.time() * 1000.0
 
         current_time = time.time() * 1000.0
         elapsed_time = current_time - last_time
@@ -94,6 +95,7 @@ if(init_target_x != fin_target_x or init_target_y != fin_target_y):
         if(angle_change_2 > 0 and elapsed_time >= delta_duration_2):
             init_beta_1 += angles_per_step_2
             angle_change_2 -= 1
+            last_time = time.time() * 1000.0
     
 
 print("After Init Angle in Motor 1:", init_theta_total)
