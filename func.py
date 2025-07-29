@@ -100,6 +100,40 @@ def create_down_arm(canvas, arm, size, angle, tag):
 
     canvas.create_line(base_canvas[0], base_canvas[1], extremo_canvas[0], extremo_canvas[1], fill="red", width=3, tags=tag)
     canvas.update()
+    return canvas, [extremo_x, extremo_y]
+
+def intersection_points(size, center_1, center_2):
+
+    distance = findD(center_1[0], center_1[1], center_2[0], center_2[1])
+
+    if distance < size*2:
+        distance_a = (size**2 - size**2 + distance**2) / (2*distance)
+        distance_b = distance_a
+
+        distance_h = math.sqrt(size**2-distance_a**2)
+
+        point_5 = [0,0]
+
+        point_5[0] = center_1[0] + (distance_a/distance) * (center_2[0] - center_1[0])
+        point_5[1] = center_1[1] + (distance_a/distance) * (center_2[1] - center_1[1])
+
+        perpendicular_1 = [center_2[1] - center_1[1], center_1[0] - center_2[0]]
+        perpendicular_2 = [center_1[1] - center_2[1], center_2[0] - center_1[0]]
+
+        return [[round(point_5[0] + (distance_h * (perpendicular_1[0]))/(distance)), round(point_5[1] + (distance_h * (perpendicular_1[1]))/(distance))],[round(point_5[0] + (distance_h * (perpendicular_2[0]))/(distance)), round(point_5[1] + (distance_h * (perpendicular_2[1]))/(distance))]]
+    else:
+        print("There are not intersectional points")
+        return []
+
+def create_upper_arm(canvas, center, extremes, tag):
+    canvas.delete(tag)
+
+    base_canvas = convert_to_canvas(center[0], center[1], canvas)
+
+    extremo_canvas = convert_to_canvas(extremes[0], extremes[1], canvas)
+
+    canvas.create_line(base_canvas[0], base_canvas[1], extremo_canvas[0], extremo_canvas[1], fill="blue", width=3, tags=tag)
+    canvas.update()
     return canvas
 
 def create_entry(root):
@@ -133,9 +167,15 @@ def create_change_position(canva, arms, sizes, target, entries, angles_init, siz
 
     angles_end = get_motor_angles(sizes, arms[0], arms[1], new_entries, size_between_motors)
 
+    print(angles_end[0])
+    print(angles_end[1])
     # Movement
     if(target[0] != new_entry_x or target[1] != new_entry_y):
         delta_angle_1, delta_angle_2 = angles_end[0] - angles_init[0], angles_end[1] - angles_init[1]
+
+        print(delta_angle_1)
+        print(delta_angle_2)
+        print(angles_per_step)
 
         direction_angle_1 = (delta_angle_1 > 0)
         direction_angle_2 = (delta_angle_2 > 0)
@@ -147,6 +187,9 @@ def create_change_position(canva, arms, sizes, target, entries, angles_init, siz
         if(direction_angle_2 == False): angles_per_step_2 = -angles_per_step_2
 
         angle_change_1, angle_change_2 = math.floor(abs(delta_angle_1 / angles_per_step)), math.floor(abs(delta_angle_2 / angles_per_step))
+
+        print(abs(delta_angle_1 / angles_per_step))
+        print(abs(delta_angle_2 / angles_per_step))
 
         if(angle_change_1 > 0):
             delta_duration_1 = duration / angle_change_1
@@ -164,15 +207,32 @@ def create_change_position(canva, arms, sizes, target, entries, angles_init, siz
             if(angle_change_1 > 0 and elapsed_time >= delta_duration_1):
                 angles_init[0] += angles_per_step_1
                 angle_change_1 -= 1
-                canva = create_down_arm(canva, arms[0], sizes[0], angles_init[0], "left_down_arm")
+                if angle_change_2 > 0:
+                    angles_init[1] += angles_per_step_2
+                    angle_change_2 -= 1
+                canva, center_1 = create_down_arm(canva, arms[0], sizes[0], angles_init[0], "left_down_arm")
+                canva, center_2 = create_down_arm(canva, arms[1], sizes[0], angles_init[1], "right_down_arm")
+                intersections = intersection_points(sizes[1], center_1, center_2)
+                canva = create_upper_arm(canva, center_1, intersections[1], "left_upper_arm")
+                canva = create_upper_arm(canva, center_2, intersections[1], "right_upper_arm")
+                last_time = time.time() * 1000.0
 
             current_time = time.time() * 1000.0
             elapsed_time = current_time - last_time
 
             if(angle_change_2 > 0 and elapsed_time >= delta_duration_2):
+                if angle_change_1 > 0:
+                    angles_init[0] += angles_per_step_1
+                    angle_change_1 -= 1
                 angles_init[1] += angles_per_step_2
                 angle_change_2 -= 1
-                canva = create_down_arm(canva, arms[1], sizes[0], angles_init[1], "right_down_arm")
+                canva, center_1 = create_down_arm(canva, arms[0], sizes[0], angles_init[0], "left_down_arm")
+                canva, center_2 = create_down_arm(canva, arms[1], sizes[0], angles_init[1], "right_down_arm")
+
+                intersections = intersection_points(sizes[1], center_1, center_2)
+                canva = create_upper_arm(canva, center_1, intersections[1], "left_upper_arm")
+                canva = create_upper_arm(canva, center_2, intersections[1], "right_upper_arm")
+                last_time = time.time() * 1000.0
     
     target[0] = new_entry_x
     target[1] = new_entry_y
@@ -201,9 +261,15 @@ def create_window(target, angles_per_step, duration, arms_size, arm_left, arm_ri
 
     angles = get_motor_angles(arms_size, arm_left, arm_right, target, size_between_motors)
 
-    grid = create_down_arm(grid, arm_left, arms_size[0], angles[0], "left_down_arm")
+    grid, center_1 = create_down_arm(grid, arm_left, arms_size[0], angles[0], "left_down_arm")
 
-    grid = create_down_arm(grid, arm_right, arms_size[0], angles[1], "right_down_arm")
+    grid, center_2 = create_down_arm(grid, arm_right, arms_size[0], angles[1], "right_down_arm")
+
+    intersections = intersection_points(arms_size[1], center_1, center_2)
+
+    grid = create_upper_arm(grid, center_1, intersections[1], "left_upper_arm")
+
+    grid = create_upper_arm(grid, center_2, intersections[1], "right_upper_arm")
 
     create_label(left, "Target X:")
     entry_x = create_entry(left)
