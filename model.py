@@ -22,7 +22,7 @@ base_arm_2_x, base_arm_2_y = 20.5, -30.0
 size_between_motors = func.findD(base_arm_2_x, base_arm_2_y, base_arm_1_x, base_arm_1_y)
 
 # Features of target
-init_target_x, init_target_y = 0, 0
+init_target_x, init_target_y = -6, 0
 fin_target_x, fin_target_y = 0, 0
 
 # Init Angles
@@ -39,6 +39,15 @@ init_theta_total = init_theta_2 + init_theta_3
 init_beta_2 = func.findAngSide(size_a, init_face_2, size_b)
 init_beta_3 = func.findAngSide(init_face_2, size_between_motors, init_face_1)
 init_beta_1 = 180.0 - (init_beta_3 + init_beta_2)
+
+# Get extreme points
+extreme_1 = func.get_extreme_point(init_theta_total, size_a, [base_arm_1_x, base_arm_1_y])
+extreme_2 = func.get_extreme_point(init_beta_1, size_a, [base_arm_2_x, base_arm_2_y])
+
+# Get the target of the arm by intersection of circles
+points_inter = func.intersection_points(size_b, extreme_1, extreme_2)
+
+print(points_inter)
 
 # End Angles
 # Faces
