@@ -4,12 +4,12 @@ from tkinter import *
 
 # Functions
 def findD(x1, y1, x2, y2):
-    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+    return round(math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2),1)
 
 def findAngSide(a, b, c):
     cos_value = (a**2 + b**2 - c**2) / (2 * a * b)
     cos_value = max(min(cos_value, 1), -1)
-    return math.degrees(math.acos(cos_value))
+    return round(math.degrees(math.acos(cos_value)), 1)
 
 def get_motor_angles(sizes, arm_left, arm_right, target, size_between_motors):
     # Faces
@@ -26,7 +26,7 @@ def get_motor_angles(sizes, arm_left, arm_right, target, size_between_motors):
     beta_3 = findAngSide(face_2, size_between_motors, face_1)
     beta_1 = 180.0 - (beta_3 + beta_2)
 
-    return [theta_total, beta_1]
+    return [round(theta_total, 1), round(beta_1, 1)]
 
 def convert_to_canvas(x, y, canvas):
     width = canvas.winfo_width()
@@ -110,7 +110,7 @@ def intersection_points(size, center_1, center_2):
         distance_a = (size**2 - size**2 + distance**2) / (2*distance)
         distance_b = distance_a
 
-        distance_h = math.sqrt(size**2-distance_a**2)
+        distance_h = round(math.sqrt(size**2-distance_a**2), 1)
 
         point_5 = [0,0]
 
@@ -122,7 +122,7 @@ def intersection_points(size, center_1, center_2):
 
         return [[round(point_5[0] + (distance_h * (perpendicular_1[0]))/(distance)), round(point_5[1] + (distance_h * (perpendicular_1[1]))/(distance))],[round(point_5[0] + (distance_h * (perpendicular_2[0]))/(distance)), round(point_5[1] + (distance_h * (perpendicular_2[1]))/(distance))]]
     else:
-        print("There are not intersectional points")
+        print("There are not interseccioned points")
         return []
 
 def create_upper_arm(canvas, center, extremes, tag):
@@ -166,16 +166,9 @@ def create_change_position(canva, arms, sizes, target, entries, angles_init, siz
     new_entries = [new_entry_x, new_entry_y]
 
     angles_end = get_motor_angles(sizes, arms[0], arms[1], new_entries, size_between_motors)
-
-    print(angles_end[0])
-    print(angles_end[1])
     # Movement
     if(target[0] != new_entry_x or target[1] != new_entry_y):
         delta_angle_1, delta_angle_2 = angles_end[0] - angles_init[0], angles_end[1] - angles_init[1]
-
-        print(delta_angle_1)
-        print(delta_angle_2)
-        print(angles_per_step)
 
         direction_angle_1 = (delta_angle_1 > 0)
         direction_angle_2 = (delta_angle_2 > 0)
@@ -186,44 +179,43 @@ def create_change_position(canva, arms, sizes, target, entries, angles_init, siz
         if(direction_angle_1 == False): angles_per_step_1 = -angles_per_step_1
         if(direction_angle_2 == False): angles_per_step_2 = -angles_per_step_2
 
-        angle_change_1, angle_change_2 = math.floor(abs(delta_angle_1 / angles_per_step)), math.floor(abs(delta_angle_2 / angles_per_step))
-
-        print(abs(delta_angle_1 / angles_per_step))
-        print(abs(delta_angle_2 / angles_per_step))
+        angle_change_1, angle_change_2 = math.floor(abs(round(delta_angle_1 / angles_per_step, 1))), math.floor(abs(round(delta_angle_2 / angles_per_step,1)))
 
         if(angle_change_1 > 0):
-            delta_duration_1 = duration / angle_change_1
+            delta_duration_1 = round(duration / angle_change_1, 1)
             
         if(angle_change_2 > 0):
-            delta_duration_2 =duration / angle_change_2
+            delta_duration_2 = round(duration / angle_change_2, 1)
 
-        last_time = time.time() * 1000.0
+        print("delta_duration_1:", delta_duration_1)
+        print("delta_duration_2:", delta_duration_2)
+
+        last_time_1 = time.time() * 1000.0
+        last_time_2 = time.time() * 1000.0
+
+        init_time = last_time_1
 
         while angle_change_1 > 0 or angle_change_2 > 0:
 
             current_time = time.time() * 1000.0
-            elapsed_time = current_time - last_time
+            elapsed_time = current_time - last_time_1
 
             if(angle_change_1 > 0 and elapsed_time >= delta_duration_1):
+
                 angles_init[0] += angles_per_step_1
                 angle_change_1 -= 1
-                if angle_change_2 > 0:
-                    angles_init[1] += angles_per_step_2
-                    angle_change_2 -= 1
                 canva, center_1 = create_down_arm(canva, arms[0], sizes[0], angles_init[0], "left_down_arm")
                 canva, center_2 = create_down_arm(canva, arms[1], sizes[0], angles_init[1], "right_down_arm")
                 intersections = intersection_points(sizes[1], center_1, center_2)
                 canva = create_upper_arm(canva, center_1, intersections[1], "left_upper_arm")
                 canva = create_upper_arm(canva, center_2, intersections[1], "right_upper_arm")
-                last_time = time.time() * 1000.0
+                last_time_1 = current_time
+                print("Angulo cambiante 1: ", angles_init[0])
+                print("Angulo cambiante 2: ", angles_init[1])
 
-            current_time = time.time() * 1000.0
-            elapsed_time = current_time - last_time
+            elapsed_time = current_time - last_time_2
 
             if(angle_change_2 > 0 and elapsed_time >= delta_duration_2):
-                if angle_change_1 > 0:
-                    angles_init[0] += angles_per_step_1
-                    angle_change_1 -= 1
                 angles_init[1] += angles_per_step_2
                 angle_change_2 -= 1
                 canva, center_1 = create_down_arm(canva, arms[0], sizes[0], angles_init[0], "left_down_arm")
@@ -232,16 +224,22 @@ def create_change_position(canva, arms, sizes, target, entries, angles_init, siz
                 intersections = intersection_points(sizes[1], center_1, center_2)
                 canva = create_upper_arm(canva, center_1, intersections[1], "left_upper_arm")
                 canva = create_upper_arm(canva, center_2, intersections[1], "right_upper_arm")
-                last_time = time.time() * 1000.0
-    
+
+                last_time_2 = current_time
+                print("Angulo cambiante 1: ", angles_init[0])
+                print("Angulo cambiante 2: ", angles_init[1])
     target[0] = new_entry_x
     target[1] = new_entry_y
+
+    ct = time.time() * 1000.0
+    et = ct - init_time
+    print(int(et), "ms")
 
     print("After Init Angle in Motor 1:", angles_init[0])
     print("After Init Angle in Motor 2:", angles_init[1])
     print()
-    print("Fin Angle in Motor 1:", angles_end[0])
-    print("Fin Angle in Motor 2:", angles_end[1])
+    print("Fin Angle in Motor 1:", angles_end[0], "Diferencia :", (round(angles_end[0] - angles_init[0],1) >= 1.8))
+    print("Fin Angle in Motor 2:", angles_end[1], "Diferencia :", (round(angles_end[1] - angles_init[1],1) >= 1.8))
     print()
 
 def create_window(target, angles_per_step, duration, arms_size, arm_left, arm_right, size_between_motors):
