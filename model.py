@@ -12,8 +12,8 @@ angles_per_step = 1.8
 duration = 6000
 
 # Features of five arm parallel robot
-size_a = 77
-size_b = 95
+size_a = 76.34
+size_b = 94.66
 base_arm_1_x, base_arm_1_y = -20.5, -30.0
 base_arm_2_x, base_arm_2_y = 20.5, -30.0
 size_between_motors = func.findD(base_arm_2_x, base_arm_2_y, base_arm_1_x, base_arm_1_y)

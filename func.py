@@ -131,10 +131,6 @@ def create_upper_arm(canvas, center, extremes, tag):
     base_canvas = convert_to_canvas(center[0], center[1], canvas)
 
     extremo_canvas = convert_to_canvas(extremes[0], extremes[1], canvas)
-    
-    print(base_canvas)
-    print(extremo_canvas)
-    print()
 
     canvas.create_line(base_canvas[0], base_canvas[1], extremo_canvas[0], extremo_canvas[1], fill="blue", width=3, tags=tag)
     canvas.update()
@@ -211,6 +207,9 @@ def create_change_position(canva, arms, sizes, target, entries, angles_init, siz
             if(angle_change_1 > 0 and elapsed_time >= delta_duration_1):
                 angles_init[0] += angles_per_step_1
                 angle_change_1 -= 1
+                if angle_change_2 > 0:
+                    angles_init[1] += angles_per_step_2
+                    angle_change_2 -= 1
                 canva, center_1 = create_down_arm(canva, arms[0], sizes[0], angles_init[0], "left_down_arm")
                 canva, center_2 = create_down_arm(canva, arms[1], sizes[0], angles_init[1], "right_down_arm")
                 intersections = intersection_points(sizes[1], center_1, center_2)
@@ -222,10 +221,14 @@ def create_change_position(canva, arms, sizes, target, entries, angles_init, siz
             elapsed_time = current_time - last_time
 
             if(angle_change_2 > 0 and elapsed_time >= delta_duration_2):
+                if angle_change_1 > 0:
+                    angles_init[0] += angles_per_step_1
+                    angle_change_1 -= 1
                 angles_init[1] += angles_per_step_2
                 angle_change_2 -= 1
                 canva, center_1 = create_down_arm(canva, arms[0], sizes[0], angles_init[0], "left_down_arm")
                 canva, center_2 = create_down_arm(canva, arms[1], sizes[0], angles_init[1], "right_down_arm")
+
                 intersections = intersection_points(sizes[1], center_1, center_2)
                 canva = create_upper_arm(canva, center_1, intersections[1], "left_upper_arm")
                 canva = create_upper_arm(canva, center_2, intersections[1], "right_upper_arm")
