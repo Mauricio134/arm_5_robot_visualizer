@@ -133,9 +133,15 @@ def create_change_position(canva, arms, sizes, target, entries, angles_init, siz
 
     angles_end = get_motor_angles(sizes, arms[0], arms[1], new_entries, size_between_motors)
 
+    print(angles_end[0])
+    print(angles_end[1])
     # Movement
     if(target[0] != new_entry_x or target[1] != new_entry_y):
         delta_angle_1, delta_angle_2 = angles_end[0] - angles_init[0], angles_end[1] - angles_init[1]
+
+        print(delta_angle_1)
+        print(delta_angle_2)
+        print(angles_per_step)
 
         direction_angle_1 = (delta_angle_1 > 0)
         direction_angle_2 = (delta_angle_2 > 0)
@@ -147,6 +153,9 @@ def create_change_position(canva, arms, sizes, target, entries, angles_init, siz
         if(direction_angle_2 == False): angles_per_step_2 = -angles_per_step_2
 
         angle_change_1, angle_change_2 = math.floor(abs(delta_angle_1 / angles_per_step)), math.floor(abs(delta_angle_2 / angles_per_step))
+
+        print(abs(delta_angle_1 / angles_per_step))
+        print(abs(delta_angle_2 / angles_per_step))
 
         if(angle_change_1 > 0):
             delta_duration_1 = duration / angle_change_1
@@ -165,6 +174,7 @@ def create_change_position(canva, arms, sizes, target, entries, angles_init, siz
                 angles_init[0] += angles_per_step_1
                 angle_change_1 -= 1
                 canva = create_down_arm(canva, arms[0], sizes[0], angles_init[0], "left_down_arm")
+                last_time = time.time() * 1000.0
 
             current_time = time.time() * 1000.0
             elapsed_time = current_time - last_time
@@ -173,6 +183,7 @@ def create_change_position(canva, arms, sizes, target, entries, angles_init, siz
                 angles_init[1] += angles_per_step_2
                 angle_change_2 -= 1
                 canva = create_down_arm(canva, arms[1], sizes[0], angles_init[1], "right_down_arm")
+                last_time = time.time() * 1000.0
     
     target[0] = new_entry_x
     target[1] = new_entry_y
