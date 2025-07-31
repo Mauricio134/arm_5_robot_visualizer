@@ -21,4 +21,27 @@ size_between_motors = func.findD(base_arm_2_x, base_arm_2_y, base_arm_1_x, base_
 # Features of target
 init_target_x, init_target_y = 0, 0
 
-func.create_window([init_target_x, init_target_y], angles_per_step, duration, [size_a, size_b], [base_arm_1_x, base_arm_1_y], [base_arm_2_x, base_arm_2_y], size_between_motors)
+#func.create_window([init_target_x, init_target_y], angles_per_step, duration, [size_a, size_b], [base_arm_1_x, base_arm_1_y], [base_arm_2_x, base_arm_2_y], size_between_motors)
+
+# Create point max and min
+
+minimum_y = 0
+maximum_y = func.intersection_points(size_a + size_b, [base_arm_1_x, base_arm_1_y], [base_arm_2_x, base_arm_2_y])[1][1]
+
+maximum_x = func.get_x_max(0, size_a + size_b, base_arm_1_x, base_arm_1_y)[0]
+minimim_x = -maximum_x
+
+distance_height = func.findD(0,minimum_y, 0, maximum_y)
+distance_width = func.findD(minimim_x, minimum_y, maximum_x, minimum_y)
+
+simple_or_each = False
+
+num_large_h = func.largest_divisor(distance_height)
+num_large_w = func.largest_divisor(distance_width)
+
+if(simple_or_each == True):
+    num_large_h = func.gcd(distance_height, distance_width)
+    num_large_w = num_large_h
+
+accesability_map = 0
+

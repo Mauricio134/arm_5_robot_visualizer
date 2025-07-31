@@ -281,3 +281,31 @@ def create_window(target, angles_per_step, duration, arms_size, arm_left, arm_ri
     button = create_button(left, "Send", lambda:create_change_position(grid, arms, arms_size, target, entries, angles, size_between_motors, duration, angles_per_step))
 
     root.mainloop()
+
+def get_x_max(y, R, h, k):
+    return [round(math.sqrt(R**2-(y-k)**2)+h), round(-math.sqrt(R**2-(y-k)**2)+h)]
+
+def gcd(a,b):
+
+    n = min(a,b)
+
+    while(n > 0):
+        if(a % n == 0 and b % n == 0):
+            break
+        n-=1
+
+    return n
+
+def largest_divisor(n):
+
+    i = int(math.sqrt(n))
+
+    while(i >= 1):
+        if n % i == 0:
+            return i
+        i-=1
+        
+    return math.sqrt(n)
+
+def reachibility_map(min_point, max_point, size_x_seg, size_y_seg):
+    return 0
