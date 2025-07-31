@@ -17,13 +17,13 @@ duration = 6000
 # Features of five arm parallel robot
 size_a = 76.34
 size_b = 94.66
-base_arm_1_x, base_arm_1_y = -20.5, -30.0
-base_arm_2_x, base_arm_2_y = 20.5, -30.0
+base_arm_1_x, base_arm_1_y = -20.5, 0
+base_arm_2_x, base_arm_2_y = 20.5, 0
 size_between_motors = func.findD(base_arm_2_x, base_arm_2_y, base_arm_1_x, base_arm_1_y)
 
 # Features of target
-init_target_x, init_target_y = -6, 0
-fin_target_x, fin_target_y = 0, 0
+init_target_x, init_target_y = -36, 30
+fin_target_x, fin_target_y = 30, 30
 
 # Init Angles
 # Faces
@@ -40,15 +40,6 @@ init_beta_2 = func.findAngSide(size_a, init_face_2, size_b)
 init_beta_3 = func.findAngSide(init_face_2, size_between_motors, init_face_1)
 init_beta_1 = 180.0 - (init_beta_3 + init_beta_2)
 
-# Get extreme points
-extreme_1 = func.get_extreme_point(init_theta_total, size_a, [base_arm_1_x, base_arm_1_y])
-extreme_2 = func.get_extreme_point(init_beta_1, size_a, [base_arm_2_x, base_arm_2_y])
-
-# Get the target of the arm by intersection of circles
-points_inter = func.intersection_points(size_b, extreme_1, extreme_2)
-
-print(points_inter)
-
 # End Angles
 # Faces
 fin_face_1 = func.findD(base_arm_1_x, base_arm_1_y, fin_target_x, fin_target_y)
@@ -64,52 +55,33 @@ fin_beta_2 = func.findAngSide(size_a, fin_face_2, size_b)
 fin_beta_3 = func.findAngSide(fin_face_2, size_between_motors, fin_face_1)
 fin_beta_1 = 180.0 - (fin_beta_3 + fin_beta_2)
 
+# New version of angles
 
-print("Before Init Angle in Motor 1:", init_theta_total)
-print("Before Init Angle in Motor 2:", init_beta_1)
-print()
+minimum_y = base_arm_1_y + 30
+maximum_y = func.intersection_points(size_a + size_b, [base_arm_1_x, base_arm_1_y], [base_arm_2_x, base_arm_2_y])[1][1]
 
-# Movement
-if(init_target_x != fin_target_x or init_target_y != fin_target_y):
-    delta_angle_1, delta_angle_2 = fin_theta_total - init_theta_total, fin_beta_1 - init_beta_1
+maximum_x = func.get_x_max(0, size_a + size_b, base_arm_1_x, base_arm_1_y)[0]
+minimim_x = -maximum_x
 
-    direction_angle_1 = (delta_angle_1 > 0)
-    direction_angle_2 = (delta_angle_2 > 0)
+max_point = [maximum_x, maximum_y]
+min_point = [minimim_x, minimum_y]
 
-    angles_per_step_1 = angles_per_step
-    angles_per_step_2 = angles_per_step
+omegas = func.get_omegas([size_a, size_b], size_between_motors, fin_target_x, fin_target_y,)
+betas = func.get_beta(size_between_motors, max_point, min_point, [base_arm_1_x, base_arm_1_y], [base_arm_2_x, base_arm_2_y], fin_target_x, fin_target_y)
 
-    if(direction_angle_1 == False): angles_per_step_1 = -angles_per_step_1
-    if(direction_angle_2 == False): angles_per_step_2 = -angles_per_step_2
+theta_1 = betas[0] + omegas[0]
+theta_2 = betas[1] - omegas[1]
 
-    angle_change_1, angle_change_2 = math.floor(abs(delta_angle_1 / angles_per_step)), math.floor(abs(delta_angle_2 / angles_per_step))
+print(fin_theta_total, theta_1)
+print(fin_beta_1, theta_2)
 
-    delta_duration_1, delta_duration_2 = duration / angle_change_1, duration / angle_change_2
+omegas = func.get_omegas([size_a, size_b], size_between_motors, init_target_x, init_target_y)
+betas = func.get_beta(size_between_motors, max_point, min_point, [base_arm_1_x, base_arm_1_y], [base_arm_2_x, base_arm_2_y], init_target_x, init_target_y)
 
-    last_time = time.time() * 1000.0
+theta_1 = betas[0] + omegas[0]
+theta_2 = betas[1] - omegas[1]
 
-    while angle_change_1 > 0 or angle_change_2 > 0:
+print(init_theta_total, theta_1)
+print(init_beta_1, theta_2)
 
-        current_time = time.time() * 1000.0
-        elapsed_time = current_time - last_time
 
-        if(angle_change_1 > 0 and elapsed_time >= delta_duration_1):
-            init_theta_total += angles_per_step_1
-            angle_change_1 -= 1
-            last_time = time.time() * 1000.0
-
-        current_time = time.time() * 1000.0
-        elapsed_time = current_time - last_time
-
-        if(angle_change_2 > 0 and elapsed_time >= delta_duration_2):
-            init_beta_1 += angles_per_step_2
-            angle_change_2 -= 1
-            last_time = time.time() * 1000.0
-    
-
-print("After Init Angle in Motor 1:", init_theta_total)
-print("After Init Angle in Motor 2:", init_beta_1)
-print()
-print("Fin Angle in Motor 1:", fin_theta_total)
-print("Fin Angle in Motor 2:", fin_beta_1)
-print()
