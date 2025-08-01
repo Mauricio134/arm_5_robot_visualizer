@@ -19,11 +19,11 @@ def get_omegas(arms_size, separation, target_x, target_y):
 
 def get_beta(separation, max_point, min_point, center_1, center_2, target_x, target_y):
     L0 = separation/2
-    if( min_point[0] <= target_x < center_1[0] and min_point[1] <= target_y <= max_point[1] ):
+    if( center_2[0] <= target_x <= max_point[0] and min_point[1] <= target_y <= max_point[1] ):
         return [math.degrees(math.atan(target_y/abs(L0+target_x))),math.degrees(math.atan(target_y/abs(L0 - target_x)))]
     elif ( center_1[0] <= target_x < center_2[0] and min_point[1] <= target_y <= max_point[1] ):
         return [math.degrees(math.atan(target_y/abs(L0+target_x))),math.degrees(math.pi - math.atan(target_y/abs(L0 - target_x)))]
-    elif ( center_2[0] <= target_x <= max_point[0] and min_point[1] <= target_y <= max_point[1] ):
+    elif ( min_point[0] <= target_x < center_1[0] and min_point[1] <= target_y <= max_point[1]):
         return [math.degrees(math.pi - math.atan(target_y/abs(L0+target_x))),math.degrees(math.pi - math.atan(target_y/abs(L0 - target_x)))]
     return []
 
@@ -74,3 +74,12 @@ def intersection_points(size, center_1, center_2):
     else:
         print("There are not interseccioned points")
         return []
+    
+def get_extremes(size, arm, angle):
+    extremo_x = arm[0] + size * math.cos(math.radians(angle))
+    extremo_y = arm[1] + size * math.sin(math.radians(angle))
+
+    return [extremo_x, extremo_y]
+
+def reachibility_map():
+    return 0

@@ -2,6 +2,8 @@ import time
 import func
 import tkinter as tk
 import math
+import matplotlib.pyplot as plt
+import numpy as np
 
 # Features of NEMA 14 Stepper Motor
 rpm = 5
@@ -23,7 +25,7 @@ size_between_motors = func.findD(base_arm_2_x, base_arm_2_y, base_arm_1_x, base_
 
 # Features of target
 init_target_x, init_target_y = -36, 30
-fin_target_x, fin_target_y = 30, 30
+fin_target_x, fin_target_y = -36, 30
 
 # Init Angles
 # Faces
@@ -61,10 +63,10 @@ minimum_y = base_arm_1_y + 30
 maximum_y = func.intersection_points(size_a + size_b, [base_arm_1_x, base_arm_1_y], [base_arm_2_x, base_arm_2_y])[1][1]
 
 maximum_x = func.get_x_max(0, size_a + size_b, base_arm_1_x, base_arm_1_y)[0]
-minimim_x = -maximum_x
+minimum_x = -maximum_x
 
 max_point = [maximum_x, maximum_y]
-min_point = [minimim_x, minimum_y]
+min_point = [minimum_x, minimum_y]
 
 omegas = func.get_omegas([size_a, size_b], size_between_motors, fin_target_x, fin_target_y,)
 betas = func.get_beta(size_between_motors, max_point, min_point, [base_arm_1_x, base_arm_1_y], [base_arm_2_x, base_arm_2_y], fin_target_x, fin_target_y)
@@ -72,16 +74,62 @@ betas = func.get_beta(size_between_motors, max_point, min_point, [base_arm_1_x, 
 theta_1 = betas[0] + omegas[0]
 theta_2 = betas[1] - omegas[1]
 
-print(fin_theta_total, theta_1)
-print(fin_beta_1, theta_2)
+# print(fin_theta_total, theta_1)
+# print(fin_beta_1, theta_2)
 
-omegas = func.get_omegas([size_a, size_b], size_between_motors, init_target_x, init_target_y)
-betas = func.get_beta(size_between_motors, max_point, min_point, [base_arm_1_x, base_arm_1_y], [base_arm_2_x, base_arm_2_y], init_target_x, init_target_y)
+distance_height = func.findD(0,minimum_y, 0, maximum_y)
+distance_width = func.findD(minimum_x, minimum_y, maximum_x, minimum_y)
 
-theta_1 = betas[0] + omegas[0]
-theta_2 = betas[1] - omegas[1]
+simple_or_each = False
 
-print(init_theta_total, theta_1)
-print(init_beta_1, theta_2)
+num_large_h = func.largest_divisor(distance_height)
+num_large_w = func.largest_divisor(distance_width)
+
+if(simple_or_each == True):
+    num_large_h = func.gcd(distance_height, distance_width)
+    num_large_w = num_large_h
+
+extremo_1 = func.get_extremes(size_a, [base_arm_1_x, base_arm_1_y], theta_1)
+extremo_2 = func.get_extremes(size_a, [base_arm_2_x, base_arm_2_y], theta_2)
+
+intersections = func.intersection_points(size_b, extremo_1, extremo_2)
+
+# print(intersections[1])
+
+mapped_x = []
+mapped_y = []
+
+for i in range(minimum_y, maximum_y+1, num_large_h):
+    for j in range(minimum_x, maximum_x +1, num_large_w):
+        try:
+            omegas = func.get_omegas([size_a, size_b], size_between_motors, j, i)
+            betas = func.get_beta(size_between_motors, max_point, min_point, [base_arm_1_x, base_arm_1_y], [base_arm_2_x, base_arm_2_y], j, i)
+
+            theta_1 = betas[0] + omegas[0]
+            theta_2 = betas[1] - omegas[1]
+
+            if theta_1 % angles_per_step != 0:
+                theta_1 -= theta_1 % angles_per_step
+
+            if theta_2 % angles_per_step != 0:
+                theta_2 -= theta_2 % angles_per_step
+            
+            extremo_1 = func.get_extremes(size_a, [base_arm_1_x, base_arm_1_y], theta_1)
+            extremo_2 = func.get_extremes(size_a, [base_arm_2_x, base_arm_2_y], theta_2)
+
+            intersections = func.intersection_points(size_b, extremo_1, extremo_2)
+            mapped_x.append(intersections[1][0])
+            mapped_y.append(intersections[1][1])
+        except:
+            print('')
+
+print(mapped_y)
+print(mapped_x)
+
+plt.plot(mapped_x, mapped_y, 'o')
+plt.plot([base_arm_1_x, base_arm_2_x], [base_arm_1_y, base_arm_2_y], 'x')
+plt.show()
+
+# accesability_map = 0
 
 
