@@ -25,7 +25,7 @@ size_between_motors = func.findD(base_arm_2_x, base_arm_2_y, base_arm_1_x, base_
 
 # Features of target
 init_target_x, init_target_y = -36, 30
-fin_target_x, fin_target_y = -36, 30
+fin_target_x, fin_target_y = -37, 37
 
 # Init Angles
 # Faces
@@ -74,8 +74,17 @@ betas = func.get_beta(size_between_motors, max_point, min_point, [base_arm_1_x, 
 theta_1 = betas[0] + omegas[0]
 theta_2 = betas[1] - omegas[1]
 
-# print(fin_theta_total, theta_1)
-# print(fin_beta_1, theta_2)
+if theta_1 % angles_per_step != 0:
+    theta_1 -= theta_1 % angles_per_step
+
+if theta_2 % angles_per_step != 0:
+    theta_2 -= theta_2 % angles_per_step
+
+extremo_1 = func.get_extremes(size_a, [base_arm_1_x, base_arm_1_y], theta_1)
+extremo_2 = func.get_extremes(size_a, [base_arm_2_x, base_arm_2_y], theta_2)
+
+intersections = func.intersection_points(size_b, extremo_1, extremo_2)
+print(intersections[1])
 
 distance_height = func.findD(0,minimum_y, 0, maximum_y)
 distance_width = func.findD(minimum_x, minimum_y, maximum_x, minimum_y)
