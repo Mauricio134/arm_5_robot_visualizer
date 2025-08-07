@@ -89,10 +89,10 @@ if(simple_or_each == True):
     num_large_h = func.gcd(distance_height, distance_width)
     num_large_w = num_large_h
 
-extremo_1 = func.get_extremes(size_a, [base_arm_1_x, base_arm_1_y], theta_1)
-extremo_2 = func.get_extremes(size_a, [base_arm_2_x, base_arm_2_y], theta_2)
+# extremo_1 = func.get_extremes(size_a, [base_arm_1_x, base_arm_1_y], theta_1)
+# extremo_2 = func.get_extremes(size_a, [base_arm_2_x, base_arm_2_y], theta_2)
 
-intersections = func.intersection_points(size_b, extremo_1, extremo_2)
+# intersections = func.intersection_points(size_b, extremo_1, extremo_2)
 
 # print(intersections[1])
 
@@ -121,7 +121,8 @@ for i in range(minimum_y, maximum_y+1, num_large_h):
             mapped_x.append(intersections[1][0])
             mapped_y.append(intersections[1][1])
         except:
-            print('')
+            mapped_x = mapped_x
+            mapped_y = mapped_y
 
 print(mapped_y)
 print(mapped_x)
@@ -131,5 +132,3 @@ plt.plot([base_arm_1_x, base_arm_2_x], [base_arm_1_y, base_arm_2_y], 'x')
 plt.show()
 
 # accesability_map = 0
-
-
