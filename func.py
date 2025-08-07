@@ -172,6 +172,7 @@ def create_change_position(canva, arms, sizes, target, entries, angles_init, siz
     new_entries = [new_entry_x, new_entry_y]
 
     angles_end = get_motor_angles(sizes, arms[0], arms[1], new_entries, size_between_motors, angles_per_step)
+
     # Movement
     if(target[0] != new_entry_x or target[1] != new_entry_y):
         delta_angle_1, delta_angle_2 = angles_end[0] - angles_init[0], angles_end[1] - angles_init[1]
@@ -193,9 +194,6 @@ def create_change_position(canva, arms, sizes, target, entries, angles_init, siz
         if(angle_change_2 > 0):
             delta_duration_2 = round(duration / angle_change_2, 1)
 
-        print("delta_duration_1:", delta_duration_1)
-        print("delta_duration_2:", delta_duration_2)
-
         last_time_1 = time.time() * 1000.0
         last_time_2 = time.time() * 1000.0
 
@@ -216,8 +214,6 @@ def create_change_position(canva, arms, sizes, target, entries, angles_init, siz
                 canva = create_upper_arm(canva, center_1, intersections[1], "left_upper_arm")
                 canva = create_upper_arm(canva, center_2, intersections[1], "right_upper_arm")
                 last_time_1 = current_time
-                print("Angulo cambiante 1: ", angles_init[0])
-                print("Angulo cambiante 2: ", angles_init[1])
 
             elapsed_time = current_time - last_time_2
 
@@ -232,14 +228,12 @@ def create_change_position(canva, arms, sizes, target, entries, angles_init, siz
                 canva = create_upper_arm(canva, center_2, intersections[1], "right_upper_arm")
 
                 last_time_2 = current_time
-                print("Angulo cambiante 1: ", angles_init[0])
-                print("Angulo cambiante 2: ", angles_init[1])
+
     target[0] = new_entry_x
     target[1] = new_entry_y
 
     ct = time.time() * 1000.0
     et = ct - init_time
-    print(int(et), "ms")
 
     print("After Init Angle in Motor 1:", angles_init[0])
     print("After Init Angle in Motor 2:", angles_init[1])
