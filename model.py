@@ -21,7 +21,7 @@ size_between_motors = func.findD(base_arm_2_x, base_arm_2_y, base_arm_1_x, base_
 # Features of target
 init_target_x, init_target_y = 0, 0
 
-#func.create_window([init_target_x, init_target_y], angles_per_step, duration, [size_a, size_b], [base_arm_1_x, base_arm_1_y], [base_arm_2_x, base_arm_2_y], size_between_motors)
+func.create_window([init_target_x, init_target_y], angles_per_step, duration, [size_a, size_b], [base_arm_1_x, base_arm_1_y], [base_arm_2_x, base_arm_2_y], size_between_motors)
 
 # Create point max and min
 
