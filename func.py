@@ -11,7 +11,7 @@ def findAngSide(a, b, c):
     cos_value = max(min(cos_value, 1), -1)
     return round(math.degrees(math.acos(cos_value)), 1)
 
-def get_motor_angles(sizes, arm_left, arm_right, target, size_between_motors):
+def get_motor_angles(sizes, arm_left, arm_right, target, size_between_motors, angles_per_step):
     # Faces
     face_1 = findD(arm_left[0], arm_left[1], target[0], target[1])
     face_2 = findD(arm_right[0], arm_right[1], target[0], target[1])
@@ -25,6 +25,12 @@ def get_motor_angles(sizes, arm_left, arm_right, target, size_between_motors):
     beta_2 = findAngSide(sizes[0], face_2, sizes[1])
     beta_3 = findAngSide(face_2, size_between_motors, face_1)
     beta_1 = 180.0 - (beta_3 + beta_2)
+
+    if theta_total % angles_per_step != 0:
+        theta_total -= theta_total % angles_per_step
+
+    if beta_1 % angles_per_step != 0:
+        beta_1 -= theta_2 % angles_per_step
 
     return [round(theta_total, 1), round(beta_1, 1)]
 
@@ -165,7 +171,7 @@ def create_change_position(canva, arms, sizes, target, entries, angles_init, siz
     
     new_entries = [new_entry_x, new_entry_y]
 
-    angles_end = get_motor_angles(sizes, arms[0], arms[1], new_entries, size_between_motors)
+    angles_end = get_motor_angles(sizes, arms[0], arms[1], new_entries, size_between_motors, angles_per_step)
     # Movement
     if(target[0] != new_entry_x or target[1] != new_entry_y):
         delta_angle_1, delta_angle_2 = angles_end[0] - angles_init[0], angles_end[1] - angles_init[1]
@@ -257,7 +263,7 @@ def create_window(target, angles_per_step, duration, arms_size, arm_left, arm_ri
 
     grid = create_grid(grid)
 
-    angles = get_motor_angles(arms_size, arm_left, arm_right, target, size_between_motors)
+    angles = get_motor_angles(arms_size, arm_left, arm_right, target, size_between_motors, angles_per_step)
 
     grid, center_1 = create_down_arm(grid, arm_left, arms_size[0], angles[0], "left_down_arm")
 
