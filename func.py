@@ -81,5 +81,43 @@ def get_extremes(size, arm, angle):
 
     return [extremo_x, extremo_y]
 
-def reachibility_map():
-    return 0
+def reachibility_path(whole_map, row, column, total_row, total_column, target_x, target_y, radius):
+    path = []
+    while(findD(whole_map[row][column][0], whole_map[row][column][1], target_x, target_y) > radius):
+        min_y = row - 1
+        max_y = row + 2
+        min_x = column - 1
+        max_x = column + 2
+
+        if row - 1 < 0:
+            min_y = row
+        
+        if row + 2 >= total_row:
+            max_y = row + 1
+
+        if column - 1 < 0:
+            min_x = column
+
+        if column + 2 >= total_column:
+            max_x = column + 1
+        
+        distance = 9999
+        new_row = -999
+        new_column = -999
+        for i in range(min_y, max_y):
+            for j in range(min_x, max_x):
+                if whole_map[i][j][0] == -999 or (whole_map[i][j][0] == whole_map[row][column][0] and whole_map[i][j][1] == whole_map[row][column][1]):
+                    continue
+
+                new_distance = findD(whole_map[row][column][0], whole_map[row][column][1], whole_map[i][j][0], whole_map[i][j][1]) + findD(whole_map[i][j][0], whole_map[i][j][1], target_x, target_y)
+                if new_distance < distance:
+                    distance = new_distance
+                    new_row = i
+                    new_column = j
+        
+        row = new_row
+        column = new_column
+        path.append(whole_map[row][column])
+
+    
+    return path
