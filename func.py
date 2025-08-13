@@ -83,6 +83,7 @@ def get_extremes(size, arm, angle):
 
 def reachibility_path(whole_map, row, column, total_row, total_column, target_x, target_y, radius):
     path = []
+    path.append(whole_map[row][column])
     while(findD(whole_map[row][column][0], whole_map[row][column][1], target_x, target_y) > radius):
         min_y = row - 1
         max_y = row + 2
