@@ -1,5 +1,7 @@
 import math
 import matplotlib.pyplot as plt
+from tkinter import *
+import time
 
 def get_euclidean_distance(init, fin):
     delta_x = (fin[0] - init[0])**2
@@ -22,6 +24,15 @@ def get_beta(separation, max_point, min_point, center_1, center_2, target_x, tar
     elif ( min_point[0] <= target_x < center_1[0] and min_point[1] <= target_y <= max_point[1]):
         return [math.degrees(math.pi - math.atan(target_y/abs(L0+target_x))),math.degrees(math.pi - math.atan(target_y/abs(L0 - target_x)))]
     return []
+
+def convert_to_canvas(x, y, canvas):
+    width = canvas.winfo_width()
+    height = canvas.winfo_height()
+
+    canvas_x = (x + 200) / 400 * width
+    canvas_y = (200 - y) / 400 * height
+
+    return canvas_x, canvas_y
 
 def intersection_points(size, center_1, center_2):
 
@@ -196,3 +207,201 @@ def reachibility_path(whole_map, init_position, total_row, total_column, target,
         distances.append([init_position[0], init_position[1]])
     
     return path, angles, distances
+
+def create_frame(root, color, relx, rely, relwidth, relheight):
+
+    frame = Frame(root, background=color)
+
+    frame.place(relx=relx, rely=rely, relwidth=relwidth, relheight=relheight)
+
+    return frame
+
+def create_canva(root, color):
+
+    canva = Canvas(root, bg=color)
+
+    canva.pack(fill=BOTH, expand=True, padx=10, pady=10)
+
+    return canva
+
+def create_grid(canvas):
+    # Get size of the Canvas
+    canvas.update()
+    ancho = canvas.winfo_width()
+    alto = canvas.winfo_height()
+    
+    # Clean Canvas
+    canvas.delete("all")
+    
+    # Center Canvas
+    centro_x = ancho // 2
+    centro_y = alto // 2
+    
+    # Draw axis (X=0 e Y=0)
+    canvas.create_line(0, centro_y, ancho, centro_y, fill="black", width=2)  # Eje X
+    canvas.create_line(centro_x, 0, centro_x, alto, fill="black", width=2)   # Eje Y
+    
+    # Draw coordinates lines in the axis
+    espaciado = min(ancho, alto) / 30
+    
+    for i in range(1, 20):
+        x_pos = centro_x + (i * espaciado)
+        canvas.create_line(x_pos, 0, x_pos, alto, fill="gray", width=1)
+        x_neg = centro_x - (i * espaciado) 
+        canvas.create_line(x_neg, 0, x_neg, alto, fill="gray", width=1)
+
+        y_pos = centro_y + (i * espaciado)
+        canvas.create_line(0, y_pos, ancho, y_pos, fill="gray", width=1)
+        y_neg = centro_y - (i * espaciado)
+        canvas.create_line(0, y_neg, ancho, y_neg, fill="gray", width=1)
+    
+    # Draw the numbers
+    canvas.create_text(centro_x + 20, centro_y + 20, text="(0,0)", font=("Arial", 10))
+    canvas.create_text(ancho - 30, centro_y + 20, text="+200", font=("Arial", 10))
+    canvas.create_text(30, centro_y + 20, text="-200", font=("Arial", 10))
+    canvas.create_text(centro_x + 20, 20, text="+200", font=("Arial", 10))
+    canvas.create_text(centro_x + 20, alto - 20, text="-200", font=("Arial", 10))
+
+    return canvas
+
+def create_down_arm(canvas, arm, size, angle, tag):
+    canvas.delete(tag)
+
+    base_canvas = convert_to_canvas(arm[0], arm[1], canvas)
+
+    extremo_x = arm[0] + size * math.cos(math.radians(angle))
+    extremo_y = arm[1] + size * math.sin(math.radians(angle))
+
+    extremo_canvas = convert_to_canvas(extremo_x, extremo_y, canvas)
+
+    canvas.create_line(base_canvas[0], base_canvas[1], extremo_canvas[0], extremo_canvas[1], fill="red", width=3, tags=tag)
+
+    return canvas, [extremo_x, extremo_y]
+
+def create_upper_arm(canvas, center, extremes, tag):
+    canvas.delete(tag)
+
+    base_canvas = convert_to_canvas(center[0], center[1], canvas)
+
+    extremo_canvas = convert_to_canvas(extremes[0], extremes[1], canvas)
+
+    canvas.create_line(base_canvas[0], base_canvas[1], extremo_canvas[0], extremo_canvas[1], fill="blue", width=3, tags=tag)
+
+    return canvas
+
+def get_motor_angles(size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, target, size_between_motors):
+
+    omegas = get_omegas(size_whole_arm_array, size_between_motors, target[0], target[1])
+
+    betas = get_beta(size_between_motors, max_point, min_point, base_arm_1, base_arm_2, target[0], target[1])
+
+    theta_1 = betas[0] + omegas[0]
+
+    theta_2 = betas[1] - omegas[1]
+
+    return [theta_1, theta_2]
+
+def create_entry(root):
+
+    entry = Entry(root, font=("Arial", 12))
+
+    entry.pack(pady=5)
+
+    return entry
+
+def create_label(root, title):
+
+    Label(root, text=title, font=("Arial", 12)).pack(pady=10)
+
+def create_button(root, text, action):
+
+    btn = Button(root, text=text, font=("Arial", 12), command=action)
+
+    btn.pack(pady=20)
+
+    return btn
+
+def create_change_position(canva, whole_map, exact_point, dimensions, separations, size_whole_arm_array, size_between_motors, max_point, min_point, base_arm_1, base_arm_2, angles_per_step, entries, duration):
+
+    new_entry_x = float(entries[0].get()) if entries[0].get() else 0
+
+    new_entry_y = float(entries[1].get()) if entries[1].get() else 0
+
+    print(new_entry_x, new_entry_y)
+
+    path, _, l = reachibility_path(whole_map, exact_point, dimensions[0], dimensions[1], [new_entry_x, new_entry_y],min(separations[0], separations[1]), size_whole_arm_array, size_between_motors, max_point, min_point, base_arm_1, base_arm_2, angles_per_step)
+
+    print(path)
+
+    amount_angles = len(path)
+
+    sections = amount_angles/duration
+
+    for step in path:
+
+        angles_init = get_motor_angles(size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, step, size_between_motors)
+
+        canva, center_1 = create_down_arm(canva, base_arm_1, size_whole_arm_array[0], angles_init[0], "left_down_arm")
+
+        canva, center_2 = create_down_arm(canva, base_arm_2, size_whole_arm_array[0], angles_init[1], "right_down_arm")
+
+        canva = create_upper_arm(canva, center_1, step, "left_upper_arm")
+
+        canva = create_upper_arm(canva, center_2, step, "right_upper_arm")
+
+        canva.update()
+
+        time.sleep(sections / 1000)
+
+
+
+
+def create_window(whole_map, exact_point, dimensions, separations, size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, target, size_between_motors, angles_per_step, duration):
+
+    root = Tk()
+
+    root.title("Five Arm Parallel Robot")
+
+    width = root.winfo_screenwidth()
+
+    height = root.winfo_screenheight()
+
+    root.geometry("%dx%d" % (width, height))
+
+    left = create_frame(root, "lightyellow", 0, 0, 0.25, 1.0)
+
+    right = create_frame(root, "lightblue", 0.25, 0, 0.75, 1.0)
+
+    grid = create_canva(right, "ivory")
+
+    grid = create_grid(grid)
+
+    angles = get_motor_angles(size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, target, size_between_motors)
+
+    if angles[0] % angles_per_step != 0:
+        angles[0] = round(angles[0]/angles_per_step) * angles_per_step
+
+    if angles[1] % angles_per_step != 0:
+        angles[1] = round(angles[1]/angles_per_step) * angles_per_step
+
+    grid, center_1 = create_down_arm(grid, base_arm_1, size_whole_arm_array[0], angles[0], "left_down_arm")
+
+    grid, center_2 = create_down_arm(grid, base_arm_2, size_whole_arm_array[0], angles[1], "right_down_arm")
+
+    intersections = intersection_points(size_whole_arm_array[1], center_1, center_2)
+
+    grid = create_upper_arm(grid, center_1, intersections[1], "left_upper_arm")
+
+    grid = create_upper_arm(grid, center_2, intersections[1], "right_upper_arm")
+
+    create_label(left, "Target X:")
+
+    entry_x = create_entry(left)
+
+    create_label(left, "Target Y:")
+
+    entry_y = create_entry(left)
+
+    button = create_button(left, "Send", lambda:create_change_position(grid, whole_map, exact_point, dimensions, separations, size_whole_arm_array, size_between_motors, max_point, min_point, base_arm_1, base_arm_2, angles_per_step, [entry_x, entry_y], duration))
+
+    root.mainloop()
