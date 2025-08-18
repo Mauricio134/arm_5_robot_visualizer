@@ -42,7 +42,7 @@ def intersection_points(size, center_1, center_2):
         distance_a = (size**2 - size**2 + distance**2) / (2*distance)
         distance_b = distance_a
 
-        distance_h = round(math.sqrt(size**2-distance_a**2), 1)
+        distance_h = math.sqrt(size**2-distance_a**2)
 
         point_5 = [0,0]
 
@@ -276,6 +276,8 @@ def create_down_arm(canvas, arm, size, angle, tag):
 
     canvas.create_line(base_canvas[0], base_canvas[1], extremo_canvas[0], extremo_canvas[1], fill="red", width=3, tags=tag)
 
+    # canvas.update()
+
     return canvas, [extremo_x, extremo_y]
 
 def create_upper_arm(canvas, center, extremes, tag):
@@ -286,6 +288,8 @@ def create_upper_arm(canvas, center, extremes, tag):
     extremo_canvas = convert_to_canvas(extremes[0], extremes[1], canvas)
 
     canvas.create_line(base_canvas[0], base_canvas[1], extremo_canvas[0], extremo_canvas[1], fill="blue", width=3, tags=tag)
+
+    # canvas.update()
 
     return canvas
 
@@ -335,7 +339,7 @@ def create_change_position(canva, whole_map, exact_point, dimensions, separation
 
     amount_angles = len(path)
 
-    sections = amount_angles/duration
+    time_per_step = duration / (amount_angles * 1000)
 
     for step in path:
 
@@ -351,7 +355,7 @@ def create_change_position(canva, whole_map, exact_point, dimensions, separation
 
         canva.update()
 
-        time.sleep(sections / 1000)
+        time.sleep(time_per_step)
 
 
 

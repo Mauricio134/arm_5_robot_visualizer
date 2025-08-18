@@ -1,7 +1,7 @@
 import func
 
 angles_per_step = 1.8
-total_duration_ms = 6000
+total_duration_ms = 1000
 
 size_lower_arm = 76.34
 size_upper_arm = 94.66
