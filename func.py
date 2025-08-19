@@ -2,6 +2,7 @@ import math
 import matplotlib.pyplot as plt
 from tkinter import *
 import time
+import numpy as np
 
 def get_euclidean_distance(init, fin):
     delta_x = (fin[0] - init[0])**2
@@ -88,125 +89,127 @@ def get_extremes(size, arm, angle):
 
     return [extremo_x, extremo_y]
 
-def get_grid_movement(min_point, max_point, size_whole_arm_array, size_between_motors, base_arm_1, base_arm_2, angles_per_step,simple_or_each, padding_y):
-    whole_map = []
-    whole_degrees = []
+# def get_grid_movement(min_point, max_point, size_whole_arm_array, size_between_motors, base_arm_1, base_arm_2, angles_per_step,simple_or_each, padding_y):
+#     whole_map = []
+#     whole_degrees = []
 
-    row = 0
-    column = 0
+#     row = 0
+#     column = 0
 
-    exact_row = 0
-    exact_column = 0
+#     exact_row = 0
+#     exact_column = 0
 
-    min_point = [min_point[0], min_point[1] + padding_y]
+#     min_point = [min_point[0], min_point[1] + padding_y]
 
-    distance_height = get_euclidean_distance([min_point[0], min_point[1]], [min_point[0], max_point[1]])
-    distance_width = get_euclidean_distance([min_point[0], min_point[1]], [max_point[0], min_point[1]])
+#     distance_height = get_euclidean_distance([min_point[0], min_point[1]], [min_point[0], max_point[1]])
+#     distance_width = get_euclidean_distance([min_point[0], min_point[1]], [max_point[0], min_point[1]])
 
-    num_large_h = largest_divisor(distance_height)
-    num_large_w = largest_divisor(distance_width)
+#     num_large_h = largest_divisor(distance_height)
+#     num_large_w = largest_divisor(distance_width)
 
-    if(simple_or_each == True):
-        num_large_h = gcd(distance_height, distance_width)
-        num_large_w = num_large_h
+#     if(simple_or_each == True):
+#         num_large_h = gcd(distance_height, distance_width)
+#         num_large_w = num_large_h
 
-    total_row = (-min_point[1]+max_point[1])/num_large_h + 1
-    total_column = (-min_point[0]+max_point[0])/num_large_w + 1
+#     total_row = (-min_point[1]+max_point[1])/num_large_h + 1
+#     total_column = (-min_point[0]+max_point[0])/num_large_w + 1
 
-    actual_distance = 999999
+#     actual_distance = 999999
 
-    for i in range(int(min_point[1]), int(max_point[1])+1, int(num_large_h)):
-        fila_1 = []
-        fila_2 = []
-        for j in range(int(min_point[0]), int(max_point[0]) +1,int(num_large_w)):
-            try:
-                omegas = get_omegas(size_whole_arm_array, size_between_motors, j, i)
-                betas = get_beta(size_between_motors, max_point, min_point, base_arm_1, base_arm_2, j, i)
+#     for i in range(int(min_point[1]), int(max_point[1])+1, int(num_large_h)):
+#         fila_1 = []
+#         fila_2 = []
+#         for j in range(int(min_point[0]), int(max_point[0]) +1,int(num_large_w)):
+#             try:
+#                 omegas = get_omegas(size_whole_arm_array, size_between_motors, j, i)
+#                 betas = get_beta(size_between_motors, max_point, min_point, base_arm_1, base_arm_2, j, i)
 
-                theta_1 = betas[0] + omegas[0]
-                theta_2 = betas[1] - omegas[1]
+#                 theta_1 = betas[0] + omegas[0]
+#                 theta_2 = betas[1] - omegas[1]
 
-                if theta_1 % angles_per_step != 0:
-                    theta_1 = round(theta_1/angles_per_step) * angles_per_step
+#                 if theta_1 % angles_per_step != 0:
+#                     theta_1 = round(theta_1/angles_per_step) * angles_per_step
 
-                if theta_2 % angles_per_step != 0:
-                    theta_2 = round(theta_2/angles_per_step) * angles_per_step
+#                 if theta_2 % angles_per_step != 0:
+#                     theta_2 = round(theta_2/angles_per_step) * angles_per_step
                 
-                extremo_1 = get_extremes(size_whole_arm_array[0], base_arm_1, theta_1)
-                extremo_2 = get_extremes(size_whole_arm_array[0], base_arm_2, theta_2)
+#                 extremo_1 = get_extremes(size_whole_arm_array[0], base_arm_1, theta_1)
+#                 extremo_2 = get_extremes(size_whole_arm_array[0], base_arm_2, theta_2)
 
-                intersections = intersection_points(size_whole_arm_array[1], extremo_1, extremo_2)
-                new_distance = get_euclidean_distance([0,min_point[1]],[intersections[1][0], intersections[1][1]])
-                if actual_distance > new_distance:
-                    actual_distance = new_distance
-                    exact_row = row
-                    exact_column = column
-                fila_1.append(intersections[1])
-                fila_2.append([theta_1, theta_2])
-            except:
-                fila_1.append([-999,-999])
-                fila_2.append([])
+#                 intersections = intersection_points(size_whole_arm_array[1], extremo_1, extremo_2)
+#                 new_distance = get_euclidean_distance([0,min_point[1]],[intersections[1][0], intersections[1][1]])
+#                 if actual_distance > new_distance:
+#                     actual_distance = new_distance
+#                     exact_row = row
+#                     exact_column = column
+#                 fila_1.append(intersections[1])
+#                 fila_2.append([theta_1, theta_2])
+#             except:
+#                 fila_1.append([-999,-999])
+#                 fila_2.append([])
             
-            column += 1
-        whole_map.append(fila_1)
-        whole_degrees.append(fila_2)
-        row += 1
-        column = 0
-    return whole_map, whole_degrees, [exact_row, exact_column], [total_row, total_column], [num_large_h, num_large_h]
+#             column += 1
+#         whole_map.append(fila_1)
+#         whole_degrees.append(fila_2)
+#         row += 1
+#         column = 0
+#     return whole_map, whole_degrees, [exact_row, exact_column], [total_row, total_column], [num_large_h, num_large_h]
 
-def reachibility_path(whole_map, init_position, total_row, total_column, target, radius, sizes, size_between_motors, max_point, min_point, arm_1, arm_2, angles_per_step):
-    path = []
-    angles = []
-    distances = []
-    while(get_euclidean_distance(whole_map[init_position[0]][init_position[1]], target) > radius):
-        min_y = init_position[0] - 1
-        max_y = init_position[0] + 2
-        min_x = init_position[1] - 1
-        max_x = init_position[1] + 2
-
-        if init_position[0] - 1 < 0:
-            min_y = init_position[0]
-        
-        if init_position[0] + 2 >= total_row:
-            max_y = init_position[0] + 1
-
-        if init_position[1] - 1 < 0:
-            min_x = init_position[1]
-
-        if init_position[1] + 2 >= total_column:
-            max_x = init_position[1] + 1
-        
-        distance = 9999
-        new_row = -999
-        new_column = -999
-        for i in range(min_y, max_y):
-            for j in range(min_x, max_x):
-                if whole_map[i][j][0] == -999 or (whole_map[i][j][0] == whole_map[init_position[0]][init_position[1]][0] and whole_map[i][j][1] == whole_map[init_position[0]][init_position[1]][1]):
-                    continue
-
-                new_distance = get_euclidean_distance(whole_map[init_position[0]][init_position[1]], whole_map[i][j]) + get_euclidean_distance(whole_map[i][j], target)
-                if new_distance < distance:
-                    distance = new_distance
-                    new_row = i
-                    new_column = j
-        
-        init_position[0] = new_row
-        init_position[1] = new_column
-
-        omegas = get_omegas(sizes, size_between_motors, whole_map[init_position[0]][init_position[1]][0], whole_map[init_position[0]][init_position[1]][1])
-        betas = get_beta(size_between_motors, max_point, min_point, arm_1, arm_2, whole_map[init_position[0]][init_position[1]][0], whole_map[init_position[0]][init_position[1]][1])
-
-        theta_1 = betas[0] + omegas[0]
-        theta_2 = betas[1] - omegas[1]
-
-        theta_1 = round(theta_1/angles_per_step) * angles_per_step
-        theta_2 = round(theta_2/angles_per_step) * angles_per_step
-
-        path.append(whole_map[init_position[0]][init_position[1]])
-        angles.append([theta_1, theta_2])
-        distances.append([init_position[0], init_position[1]])
+def reachibility_path(init_position, target, radius, segment_x, segment_y, size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, size_between_motors, angles_per_step):
     
-    return path, angles, distances
+    if(get_motor_angles(size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, target, size_between_motors) == []):
+        return []
+    
+    path = []
+    
+    while(get_euclidean_distance(init_position, target) > radius):
+
+        init_y = init_position[1] - segment_y
+
+        fin_y = init_position[1] + segment_y * 2
+
+        init_x = init_position[0] - segment_x
+
+        fin_x = init_position[0] + segment_x * 2
+
+        distance = 9999.0
+
+        for j in np.arange(init_y, fin_y, segment_y):
+            for i in np.arange(init_x, fin_x, segment_x):
+                j_float = float(j)
+                i_float = float(i)
+                
+                if (i_float == init_position[0] and j_float == init_position[1]):
+                    continue
+                
+                angles = get_motor_angles(size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, [i_float, j_float], size_between_motors)
+
+                if(angles == []):
+                    continue
+                
+                if angles[0] % angles_per_step != 0:
+                    angles[0] = round(angles[0]/angles_per_step) * angles_per_step
+
+                if angles[1] % angles_per_step != 0:
+                    angles[1] = round(angles[1]/angles_per_step) * angles_per_step
+
+                center_1 = get_extremes(size_whole_arm_array[0], base_arm_1, angles[0])
+                center_2 = get_extremes(size_whole_arm_array[0], base_arm_2, angles[1])
+                result = intersection_points(size_whole_arm_array[1], center_1, center_2)
+                i_float = result[1][0]
+                j_float = result[1][1]
+
+                new_distance = get_euclidean_distance(init_position, [i_float, j_float]) + get_euclidean_distance([i_float, j_float], target)
+
+                if(new_distance < distance):
+                    distance = new_distance
+                    init_position[0] = i_float
+                    init_position[1] = j_float
+
+        path.append([float(init_position[0]), float(init_position[1])])
+
+    return path        
+
 
 def create_frame(root, color, relx, rely, relwidth, relheight):
 
@@ -294,16 +297,18 @@ def create_upper_arm(canvas, center, extremes, tag):
     return canvas
 
 def get_motor_angles(size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, target, size_between_motors):
+    try:
+        omegas = get_omegas(size_whole_arm_array, size_between_motors, target[0], target[1])
 
-    omegas = get_omegas(size_whole_arm_array, size_between_motors, target[0], target[1])
+        betas = get_beta(size_between_motors, max_point, min_point, base_arm_1, base_arm_2, target[0], target[1])
 
-    betas = get_beta(size_between_motors, max_point, min_point, base_arm_1, base_arm_2, target[0], target[1])
+        theta_1 = betas[0] + omegas[0]
 
-    theta_1 = betas[0] + omegas[0]
+        theta_2 = betas[1] - omegas[1]
 
-    theta_2 = betas[1] - omegas[1]
-
-    return [theta_1, theta_2]
+        return [theta_1, theta_2]
+    except:
+        return []
 
 def create_entry(root):
 
@@ -325,42 +330,51 @@ def create_button(root, text, action):
 
     return btn
 
-def create_change_position(canva, whole_map, exact_point, dimensions, separations, size_whole_arm_array, size_between_motors, max_point, min_point, base_arm_1, base_arm_2, angles_per_step, entries, duration):
+
+def create_change_position(canva, init_position, separations, size_whole_arm_array, size_between_motors, max_point, min_point, base_arm_1, base_arm_2, angles_per_step, entries, duration):
 
     new_entry_x = float(entries[0].get()) if entries[0].get() else 0
 
     new_entry_y = float(entries[1].get()) if entries[1].get() else 0
 
-    print(new_entry_x, new_entry_y)
+    path = reachibility_path(init_position, [new_entry_x, new_entry_y], min(separations[0], separations[1]), separations[0], separations[1], size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, size_between_motors, angles_per_step)
 
-    path, _, l = reachibility_path(whole_map, exact_point, dimensions[0], dimensions[1], [new_entry_x, new_entry_y],min(separations[0], separations[1]), size_whole_arm_array, size_between_motors, max_point, min_point, base_arm_1, base_arm_2, angles_per_step)
-
-    print(path)
-
+    if path == []:
+        return 
+    
     amount_angles = len(path)
 
-    time_per_step = duration / (amount_angles * 1000)
+    time_per_step = duration / amount_angles
 
-    for step in path:
+    init_time = time.time() * 1000.0
 
-        angles_init = get_motor_angles(size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, step, size_between_motors)
+    first = 0
+    while first < len(path):
 
-        canva, center_1 = create_down_arm(canva, base_arm_1, size_whole_arm_array[0], angles_init[0], "left_down_arm")
+        current_time = time.time() * 1000.0
 
-        canva, center_2 = create_down_arm(canva, base_arm_2, size_whole_arm_array[0], angles_init[1], "right_down_arm")
+        if(current_time - init_time >= time_per_step):
 
-        canva = create_upper_arm(canva, center_1, step, "left_upper_arm")
+            angles_init = get_motor_angles(size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, path[first], size_between_motors)
 
-        canva = create_upper_arm(canva, center_2, step, "right_upper_arm")
+            canva, center_1 = create_down_arm(canva, base_arm_1, size_whole_arm_array[0], angles_init[0], "left_down_arm")
 
-        canva.update()
+            canva, center_2 = create_down_arm(canva, base_arm_2, size_whole_arm_array[0], angles_init[1], "right_down_arm")
 
-        time.sleep(time_per_step)
+            canva = create_upper_arm(canva, center_1, path[first], "left_upper_arm")
+
+            canva = create_upper_arm(canva, center_2, path[first], "right_upper_arm")
+
+            canva.update()
+
+            init_time = current_time
+
+            first += 1
 
 
 
 
-def create_window(whole_map, exact_point, dimensions, separations, size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, target, size_between_motors, angles_per_step, duration):
+def create_window(init_position, size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, size_between_motors, angles_per_step, total_duration_ms, simple_or_each, padding_y):
 
     root = Tk()
 
@@ -380,7 +394,7 @@ def create_window(whole_map, exact_point, dimensions, separations, size_whole_ar
 
     grid = create_grid(grid)
 
-    angles = get_motor_angles(size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, target, size_between_motors)
+    angles = get_motor_angles(size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, init_position, size_between_motors)
 
     if angles[0] % angles_per_step != 0:
         angles[0] = round(angles[0]/angles_per_step) * angles_per_step
@@ -406,6 +420,19 @@ def create_window(whole_map, exact_point, dimensions, separations, size_whole_ar
 
     entry_y = create_entry(left)
 
-    button = create_button(left, "Send", lambda:create_change_position(grid, whole_map, exact_point, dimensions, separations, size_whole_arm_array, size_between_motors, max_point, min_point, base_arm_1, base_arm_2, angles_per_step, [entry_x, entry_y], duration))
+    min_point = [min_point[0], min_point[1] + padding_y]
 
+    distance_height = get_euclidean_distance([min_point[0], min_point[1]], [min_point[0], max_point[1]])
+    distance_width = get_euclidean_distance([min_point[0], min_point[1]], [max_point[0], min_point[1]])
+
+    num_large_h = largest_divisor(distance_height)
+    num_large_w = largest_divisor(distance_width)
+
+    if(simple_or_each == True):
+        num_large_h = gcd(distance_height, distance_width)
+        num_large_w = num_large_h
+
+    separations = [num_large_w, num_large_h]
+
+    button = create_button(left, "Send", lambda:create_change_position(grid, init_position, separations, size_whole_arm_array, size_between_motors, max_point, min_point, base_arm_1, base_arm_2, angles_per_step, [entry_x, entry_y], total_duration_ms))
     root.mainloop()
