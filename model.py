@@ -22,10 +22,58 @@ minimum_x = -maximum_x
 max_point = [maximum_x, maximum_y]
 min_point = [minimum_x, minimum_y]
 
-target = [0.0, 38.0]
+target = [0.0 + 7.0, 38.0 + 11.7]
 
-#whole_map, whole_degrees, exact_point, dimensions, separations = func.get_grid_movement(min_point, max_point, size_whole_arm_array, size_between_motors, base_arm_1, base_arm_2, angles_per_step, False, 38)
+angles_1 = func.get_motor_angles_1(size_whole_arm_array,min_point, max_point, base_arm_1, base_arm_2, target, size_between_motors)
 
-func.create_window(target, size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, size_between_motors, angles_per_step, total_duration_ms, False, 38)
+if angles_1[0] % angles_per_step != 0:
+    angles_1[0] = round(angles_1[0]/angles_per_step) * angles_per_step
 
-#path, _, l = func.reachibility_path(whole_map, exact_point, dimensions[0], dimensions[1], target,min(separations[0], separations[1]), size_whole_arm_array, size_between_motors, max_point, min_point, base_arm_1, base_arm_2, angles_per_step)
+if angles_1[1] % angles_per_step != 0:
+    angles_1[1] = round(angles_1[1]/angles_per_step) * angles_per_step
+
+center_1 = func.get_extremes(size_whole_arm_array[0], base_arm_1, angles_1[0])
+center_2 = func.get_extremes(size_whole_arm_array[0], base_arm_2, angles_1[1])
+
+intersections_1 = func.intersection_points(size_whole_arm_array[1], center_1, center_2)
+
+print(angles_1)
+print(intersections_1[1])
+
+angles_2 = func.get_motor_angles_2(size_whole_arm_array, base_arm_1, base_arm_2, target, size_between_motors)
+
+if angles_2[0] % angles_per_step != 0:
+    angles_2[0] = round(angles_2[0]/angles_per_step) * angles_per_step
+
+if angles_2[1] % angles_per_step != 0:
+    angles_2[1] = round(angles_2[1]/angles_per_step) * angles_per_step
+
+center_1 = func.get_extremes(size_whole_arm_array[0], base_arm_1, angles_2[0])
+center_2 = func.get_extremes(size_whole_arm_array[0], base_arm_2, angles_2[1])
+
+intersections_2 = func.intersection_points(size_whole_arm_array[1], center_1, center_2)
+
+print(angles_2)
+print(intersections_2[1])
+
+
+angles_1 = func.get_motor_angles_1(size_whole_arm_array,min_point, max_point, base_arm_1, base_arm_2, intersections_1[1], size_between_motors)
+
+if angles_1[0] % angles_per_step != 0:
+    angles_1[0] = round(angles_1[0]/angles_per_step) * angles_per_step
+
+if angles_1[1] % angles_per_step != 0:
+    angles_1[1] = round(angles_1[1]/angles_per_step) * angles_per_step
+
+print(angles_1)
+
+angles_2 = func.get_motor_angles_2(size_whole_arm_array, base_arm_1, base_arm_2, intersections_2[1], size_between_motors)
+
+if angles_2[0] % angles_per_step != 0:
+    angles_2[0] = round(angles_2[0]/angles_per_step) * angles_per_step
+
+if angles_2[1] % angles_per_step != 0:
+    angles_2[1] = round(angles_2[1]/angles_per_step) * angles_per_step
+
+
+print(angles_2)
