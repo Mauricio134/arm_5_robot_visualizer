@@ -160,10 +160,10 @@ def convert_positions(size_whole_arm_array, min_point, max_point, base_arm_1, ba
     angles = get_motor_angles(size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, init_position, size_between_motors)
 
     if angles[0] % angles_per_step != 0:
-        angles[0] = math.ceil(angles[0]/angles_per_step) * angles_per_step
+        angles[0] = round(angles[0]/angles_per_step) * angles_per_step
 
     if angles[1] % angles_per_step != 0:
-        angles[1] = math.ceil(angles[1]/angles_per_step) * angles_per_step
+        angles[1] = round(angles[1]/angles_per_step) * angles_per_step
 
     center_1 = get_extremes(size_whole_arm_array[0], base_arm_1, angles[0])
 
@@ -373,16 +373,16 @@ def create_change_position(canva, init_position, separations, size_whole_arm_arr
         current_time = time.time() * 1000.0
 
         if(current_time - init_time >= time_per_step):
-            print(path[first])
+            print("----",path[first])
             angles_init = get_motor_angles(size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, path[first], size_between_motors)
             if angles_init == []:
                 print("Fallaste")
                 return 
             if angles_init[0] % angles_per_step != 0:
-                angles_init[0] = math.ceil(angles_init[0]/angles_per_step) * angles_per_step
+                angles_init[0] = round(angles_init[0]/angles_per_step) * angles_per_step
 
             if angles_init[1] % angles_per_step != 0:
-                angles_init[1] = math.ceil(angles_init[1]/angles_per_step) * angles_per_step
+                angles_init[1] = round(angles_init[1]/angles_per_step) * angles_per_step
             canva, center_1 = create_down_arm(canva, base_arm_1, size_whole_arm_array[0], angles_init[0], "left_down_arm")
 
             canva, center_2 = create_down_arm(canva, base_arm_2, size_whole_arm_array[0], angles_init[1], "right_down_arm")
@@ -423,10 +423,10 @@ def create_window(init_position, size_whole_arm_array, min_point, max_point, bas
     angles = get_motor_angles(size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, init_position, size_between_motors)
 
     if angles[0] % angles_per_step != 0:
-        angles[0] = math.ceil(angles[0]/angles_per_step) * angles_per_step
+        angles[0] = round(angles[0]/angles_per_step) * angles_per_step
 
     if angles[1] % angles_per_step != 0:
-        angles[1] = math.ceil(angles[1]/angles_per_step) * angles_per_step
+        angles[1] = round(angles[1]/angles_per_step) * angles_per_step
 
     grid, center_1 = create_down_arm(grid, base_arm_1, size_whole_arm_array[0], angles[0], "left_down_arm")
 
