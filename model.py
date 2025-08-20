@@ -22,7 +22,7 @@ minimum_x = -maximum_x
 max_point = [maximum_x, maximum_y]
 min_point = [minimum_x, minimum_y]
 
-target = [7.0, 38.0]
+target = [14.0, 38.0]
 
 angles_1 = func.get_motor_angles_1(size_whole_arm_array,min_point, max_point, base_arm_1, base_arm_2, target, size_between_motors)
 
