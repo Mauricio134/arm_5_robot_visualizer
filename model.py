@@ -1,5 +1,6 @@
 import general
 import find_points
+import find_angles
 
 angles_per_step = 1.8
 
@@ -37,8 +38,26 @@ num_large_w = general.largest_divisor(distance_width)
 if(simple_or_each == True):
     error, new_num_large_h = general.gcd(distance_height, distance_width)
     new_num_large_w = new_num_large_h
-    if(error):
+    if( error ):
+        num_large_h = num_large_h
+        num_large_w = num_large_w
+    else:
         num_large_h = new_num_large_h
-        num_large_w = new_num_large_h
+        num_large_w = new_num_large_w
 
 size_segments = [num_large_w, num_large_h]
+
+x = float(input("X: "))
+y = float(input("Y: "))
+
+error, angles = find_angles.inverse_kinematic(size_whole_arm, min_point, max_point, base_arm_1, base_arm_2, [x,y], [x,y], distance_between_motors, angles_per_step)
+
+print(angles)
+
+error, position = find_points.kinematic([base_arm_1, base_arm_2], size_whole_arm, angles)
+
+print(position)
+
+error, angles = find_angles.inverse_kinematic(size_whole_arm, min_point, max_point, base_arm_1, base_arm_2, position, [x,y], distance_between_motors, angles_per_step)
+
+print(angles)
