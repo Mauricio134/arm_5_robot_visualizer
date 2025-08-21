@@ -38,13 +38,11 @@ def get_beta(separation, max_point, min_point, center_1, center_2, target_x, tar
 def inverse_kinematic(size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, target, reference, size_between_motors, angles_per_step):
     try:
         error, omegas = get_omegas(size_whole_arm_array, size_between_motors, target[0], target[1])
-        print("omega")
         if(error):
             print("There is an error in omegas function, find_angles")
             return True, [0]
 
         error, betas = get_beta(size_between_motors, max_point, min_point, base_arm_1, base_arm_2, target[0], target[1], reference)
-        print("beta")
         if(error):
             print("There is an error in betas function, find_angles")
             return True, [1]

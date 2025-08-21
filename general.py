@@ -36,30 +36,30 @@ def largest_divisor(n):
 def find_path(size_whole_arm, init_position, fin_position, min_point, max_point, base_arm_1, base_arm_2, segment_x, segment_y, distance_between_motors, angles_per_step, radius):
     
     if find_points.limitations(min_point, max_point, fin_position) :
-        return True, []
+        return True, [], []
     
     error, angles = find_angles.inverse_kinematic(size_whole_arm, min_point, max_point, base_arm_1, base_arm_2, fin_position, fin_position, distance_between_motors, angles_per_step)
 
     if error :
-        return True, []
+        return True, [], []
     
     error, new_position_fin = find_points.kinematic([base_arm_1, base_arm_2], size_whole_arm, angles)
 
     if error:
-        return True, []
+        return True, [], []
     
     error, angles = find_angles.inverse_kinematic(size_whole_arm,min_point, max_point, base_arm_1, base_arm_2, init_position, init_position, distance_between_motors, angles_per_step)
 
     if error : 
-        return True, []
+        return True, [], []
     
     error, new_position_init = find_points.kinematic([base_arm_1, base_arm_2], size_whole_arm, angles)
 
     if error:
-        return True, []
+        return True, [], []
     
-    new_point = []
     path = []
+    reference = []
     while get_distance_between_points(new_position_init, new_position_fin) > radius:
 
         init_x = init_position[0] - segment_x
@@ -82,7 +82,7 @@ def find_path(size_whole_arm, init_position, fin_position, min_point, max_point,
                 if find_points.limitations(min_point, max_point, [pos_x, pos_y]) :
                     continue
 
-                error, angles = find_angles.inverse_kinematic(size_whole_arm,min_point, max_point, base_arm_1, base_arm_2, [pos_x, pos_y], distance_between_motors, angles_per_step)
+                error, angles = find_angles.inverse_kinematic(size_whole_arm,min_point, max_point, base_arm_1, base_arm_2,[pos_x, pos_y], [pos_x, pos_y], distance_between_motors, angles_per_step)
 
                 if error :
                     continue
@@ -98,15 +98,21 @@ def find_path(size_whole_arm, init_position, fin_position, min_point, max_point,
                     distance = new_distance
                     new_pos_init_x = pos_x
                     new_pos_init_y = pos_y
-                    new_point = new_position
+                    new_position_init = new_position
 
         init_position[0] = new_pos_init_x
         init_position[1] = new_pos_init_y
+
+        print(reference)
+        reference.append(init_position.copy())
         
-        path.append(new_point)
+        path.append(new_position_init)
     
-    if path[-1] != new_position_fin:
-        path.append(new_position_fin)
+    if len(path) > 0:
+        if path[-1] != new_position_fin:
+            print(reference)
+            reference.append(init_position.copy())
+            path.append(new_position_fin)
     
-    return path
+    return False, path, reference
 

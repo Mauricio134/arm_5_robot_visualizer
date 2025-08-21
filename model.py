@@ -1,8 +1,9 @@
 import general
 import find_points
 import find_angles
+import visual
 
-angles_per_step = 1.8
+angles_per_step = 0.12
 
 duration_total_ms = 6000
 
@@ -47,17 +48,25 @@ if(simple_or_each == True):
 
 size_segments = [num_large_w, num_large_h]
 
-x = float(input("X: "))
-y = float(input("Y: "))
+# error, angles = find_angles.inverse_kinematic(size_whole_arm, min_point, max_point, base_arm_1, base_arm_2, [x,y], [x,y], distance_between_motors, angles_per_step)
 
-error, angles = find_angles.inverse_kinematic(size_whole_arm, min_point, max_point, base_arm_1, base_arm_2, [x,y], [x,y], distance_between_motors, angles_per_step)
+# print(angles)
 
-print(angles)
+# error, position = find_points.kinematic([base_arm_1, base_arm_2], size_whole_arm, angles)
 
-error, position = find_points.kinematic([base_arm_1, base_arm_2], size_whole_arm, angles)
+# print(position)
 
-print(position)
+# error, angles = find_angles.inverse_kinematic(size_whole_arm, min_point, max_point, base_arm_1, base_arm_2, position, [x,y], distance_between_motors, angles_per_step)
 
-error, angles = find_angles.inverse_kinematic(size_whole_arm, min_point, max_point, base_arm_1, base_arm_2, position, [x,y], distance_between_motors, angles_per_step)
+# print(angles)
 
-print(angles)
+visual.create_window(size_segments, init_position, size_whole_arm, min_point, max_point, base_arm_1, base_arm_2, distance_between_motors, angles_per_step, duration_total_ms)
+
+# while True:
+#     x = float(input("X: "))
+#     y = float(input("Y: "))
+#     error, path = general.find_path(size_whole_arm, init_position, [x,y], min_point, max_point, base_arm_1, base_arm_2, size_segments[0], size_segments[1], distance_between_motors, angles_per_step, min(size_segments[0], size_segments[1]))
+
+#     print(path)
+
+#     print(init_position)
