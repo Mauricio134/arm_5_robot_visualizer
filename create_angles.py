@@ -14,19 +14,29 @@ def get_omegas(arms_size, separation, target_x, target_y):
         print("Error in create_angles.py, get_omegas")
         return []
 
-def get_beta(separation, max_point, min_point, center_1, center_2, target_x, target_y):
+def get_beta(separation, max_point, min_point, center_1, center_2, target_x, target_y, real_position):
+    print("##### Valores ######")
+    print(target_x)
+    print(min_point[0])
+    print(center_1[0])
+    print(center_2[0])
+    print(max_point[0])
+    print()
+    print(target_y)
+    print(min_point[1])
+    print(max_point[1])
     try:
         L0 = separation/2
 
-        if( center_2[0] <= target_x <= max_point[0] and min_point[1] <= target_y <= max_point[1] ):
+        if( center_2[0] <= real_position[0] <= max_point[0] and min_point[1] <= real_position[1] <= max_point[1] ):
 
             return [math.degrees(math.atan(target_y/abs(L0 + target_x))),math.degrees(math.atan(target_y/abs(L0 - target_x)))]
         
-        elif ( center_1[0] <= target_x < center_2[0] and min_point[1] <= target_y <= max_point[1] ):
+        elif ( center_1[0] <= real_position[0] < center_2[0] and min_point[1] <= real_position[1] <= max_point[1] ):
 
             return [math.degrees(math.atan(target_y/abs(L0 + target_x))),math.degrees(math.pi - math.atan(target_y/abs(L0 - target_x)))]
         
-        elif ( min_point[0] <= target_x < center_1[0] and min_point[1] <= target_y <= max_point[1]):
+        elif ( min_point[0] <= real_position[0] < center_1[0] and min_point[1] <= real_position[1] <= max_point[1]):
 
             return [math.degrees(math.pi - math.atan(target_y/abs(L0 + target_x))),math.degrees(math.pi - math.atan(target_y/abs(L0 - target_x)))]
         
@@ -46,12 +56,12 @@ def get_interior_angle(a, b, c):
         print("Error in create_angles.py, get_interior_angle")
         return []
 
-def get_motor_angles_1(size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, target, size_between_motors):
+def get_motor_angles_1(size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, target, real_position, size_between_motors):
     try:
         omegas = get_omegas(size_whole_arm_array, size_between_motors, target[0], target[1])
 
-        betas = get_beta(size_between_motors, max_point, min_point, base_arm_1, base_arm_2, target[0], target[1])
-
+        betas = get_beta(size_between_motors, max_point, min_point, base_arm_1, base_arm_2, target[0], target[1], real_position)
+        
         theta_1 = betas[0] + omegas[0]
 
         theta_2 = betas[1] - omegas[1]

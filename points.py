@@ -1,5 +1,6 @@
 import math
 import general
+import create_angles
 
 def get_extremes(size, arm, angle):
     try:
@@ -33,3 +34,21 @@ def intersection_points(size, center_1, center_2):
     else:
         print("Error in points.py, intersection_points")
         return []
+    
+def convert_positions(size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, target, init_position, size_between_motors, angles_per_step):
+
+    angles = create_angles.get_motor_angles_1(size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, target, init_position, size_between_motors)
+
+    if angles[0] % angles_per_step != 0:
+        angles[0] = round(angles[0]/angles_per_step) * angles_per_step
+
+    if angles[1] % angles_per_step != 0:
+        angles[1] = round(angles[1]/angles_per_step) * angles_per_step
+
+    center_1 = get_extremes(size_whole_arm_array[0], base_arm_1, angles[0])
+
+    center_2 = get_extremes(size_whole_arm_array[0], base_arm_2, angles[1])
+
+    intersections = intersection_points(size_whole_arm_array[1], center_1, center_2)
+
+    return angles, intersections
