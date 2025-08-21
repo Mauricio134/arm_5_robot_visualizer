@@ -1,24 +1,24 @@
 import math
 
-def get_euclidean_distance(init, fin):
-    delta_x = (fin[0] - init[0])**2
-    delta_y = (fin[1] - init[1])**2
-    return math.sqrt(delta_x + delta_y)
-    
-def get_x_max(y, R, h, k):
-    
-    return [math.sqrt(R**2-(y-k)**2)+h, -math.sqrt(R**2-(y-k)**2)+h]
+def get_distance_between_points(init_point, fin_point):
+
+    delta_x = ( fin_point[0] - init_point[0] ) ** 2
+
+    delta_y = ( fin_point[1] - init_point[1] ) ** 2
+
+    return math.sqrt( delta_x + delta_y )
 
 def gcd(a,b):
 
-    n = min(a,b)
+    n = min(round(a),round(b))
 
     while(n > 0):
+        print(n)
         if(a % n == 0 and b % n == 0):
-            break
+            return True, n
         n-=1
 
-    return n
+    return False, 0.0
 
 def largest_divisor(n):
 
