@@ -2,12 +2,16 @@ import math
 import general
 
 def get_omegas(arms_size, separation, target_x, target_y):
+    print(target_x, target_y)
     try:
         L0 = separation / 2
 
         k = math.sqrt((target_x + L0)**2+target_y**2)
 
         s = math.sqrt((target_x - L0)**2+target_y**2)
+        print("###### Omega ######")
+        print((arms_size[0]**2-arms_size[1]**2+k**2)/(2*arms_size[0]*k))
+        print((arms_size[0]**2-arms_size[1]**2+s**2)/(2*arms_size[0]*s))
 
         return [math.degrees(math.acos((arms_size[0]**2-arms_size[1]**2+k**2)/(2*arms_size[0]*k))),math.degrees(math.acos((arms_size[0]**2-arms_size[1]**2+s**2)/(2*arms_size[0]*s)))]
     except:
@@ -15,7 +19,7 @@ def get_omegas(arms_size, separation, target_x, target_y):
         return []
 
 def get_beta(separation, max_point, min_point, center_1, center_2, target_x, target_y, real_position):
-    print("##### Valores ######")
+    print("##### Beta ######")
     print(target_x)
     print(min_point[0])
     print(center_1[0])
@@ -61,7 +65,7 @@ def get_motor_angles_1(size_whole_arm_array, min_point, max_point, base_arm_1, b
         omegas = get_omegas(size_whole_arm_array, size_between_motors, target[0], target[1])
 
         betas = get_beta(size_between_motors, max_point, min_point, base_arm_1, base_arm_2, target[0], target[1], real_position)
-        
+
         theta_1 = betas[0] + omegas[0]
 
         theta_2 = betas[1] - omegas[1]

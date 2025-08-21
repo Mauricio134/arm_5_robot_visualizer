@@ -39,6 +39,9 @@ def convert_positions(size_whole_arm_array, min_point, max_point, base_arm_1, ba
 
     angles = create_angles.get_motor_angles_1(size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, target, init_position, size_between_motors)
 
+    if angles == []:
+        return [], []
+
     if angles[0] % angles_per_step != 0:
         angles[0] = round(angles[0]/angles_per_step) * angles_per_step
 

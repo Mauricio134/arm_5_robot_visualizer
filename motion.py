@@ -14,6 +14,9 @@ def find_path(init_position, target, size_whole_arm_array, size_between_motors, 
     
     angles, new_position_init = points.convert_positions(size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, init_position, init_position, size_between_motors, angles_per_step)
 
+    if angles == [] or new_position_init == []:
+        return [], []
+
     new_position_init = new_position_init[1]
     
     count = 0
@@ -43,6 +46,9 @@ def find_path(init_position, target, size_whole_arm_array, size_between_motors, 
                     continue
 
                 angles, new_positions = points.convert_positions(size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, [pos_x, pos_y], init_position, size_between_motors, angles_per_step)
+
+                if angles == [] or new_position_init == []:
+                    continue
 
                 new_positions = new_positions[1]
 
