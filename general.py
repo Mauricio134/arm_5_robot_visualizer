@@ -103,14 +103,12 @@ def find_path(size_whole_arm, init_position, fin_position, min_point, max_point,
         init_position[0] = new_pos_init_x
         init_position[1] = new_pos_init_y
 
-        print(reference)
         reference.append(init_position.copy())
         
         path.append(new_position_init)
     
     if len(path) > 0:
         if path[-1] != new_position_fin:
-            print(reference)
             reference.append(init_position.copy())
             path.append(new_position_fin)
     

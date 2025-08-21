@@ -144,10 +144,6 @@ def create_change_position(canva, init_position, size_segments, size_whole_arm_a
         current_time = time.time() * 1000.0
 
         if(current_time - init_time >= time_per_step):
-            print(len(path))
-            print(references)
-            print(first)
-            print(path[first], references[first])
 
             error, angles_init = find_angles.inverse_kinematic(size_whole_arm_array, min_point, max_point, base_arm_1, base_arm_2, path[first], references[first], size_between_motors, angles_per_step)
 
