@@ -7,11 +7,12 @@ import find_points
 import time
 
 def convert_to_canvas(x, y, canvas):
+
     width = canvas.winfo_width()
     height = canvas.winfo_height()
 
-    canvas_x = (x + 200) / 400 * width
-    canvas_y = (200 - y) / 400 * height
+    canvas_x = ( x + 200 ) / 400 * width
+    canvas_y = ( 200 - y ) / 400 * height
 
     return canvas_x, canvas_y
 
@@ -88,6 +89,7 @@ def create_down_arm(canvas, arm, size, angle, tag):
     return canvas, [extremo_x, extremo_y]
 
 def create_upper_arm(canvas, center, extremes, tag):
+
     canvas.delete(tag)
 
     base_canvas = convert_to_canvas(center[0], center[1], canvas)
@@ -128,7 +130,7 @@ def create_change_position(canva, init_position, size_segments, size_whole_arm_a
     new_entry_y = float(entries[1].get()) if entries[1].get() else 0
 
     error, path, references = general.find_path(size_whole_arm_array, init_position, [new_entry_x, new_entry_y], min_point, max_point, base_arm_1, base_arm_2, size_segments[0], size_segments[1], size_between_motors, angles_per_step, min(size_segments[0], size_segments[1]))
-    
+    print(path)
     if path == []:
         return 
     

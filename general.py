@@ -15,7 +15,6 @@ def gcd(a,b):
     n = min(round(a),round(b))
 
     while(n > 0):
-        print(n)
         if(a % n == 0 and b % n == 0):
             return False, n
         n-=1
