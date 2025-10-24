@@ -5,7 +5,7 @@ import visual
 
 angles_per_step = 0.12
 
-duration_total_ms = 6000
+duration_total_ms = 1000
 
 size_whole_arm= [76.34, 94.66]
 
